@@ -2,18 +2,47 @@ const express = require("express");
 
 const app = express();
 
-const fakeArr = [];
+const books = [];
+book_id = 1;
 
 app.use(express.json());
 
-app.get("/getAllBooks", (request, response) => {
-  response.send({ message: "success", fakeArr: fakeArr });
+app.get("/books", (request, response) => {
+  response.send({ message: "success", books: books });
 });
 
-app.post("/addBook", (request, response) => {
-  fakeArr.push(request.body);
-  console.log(fakeArr);
-  response.send({ message: "success", newBook: fakeArr[fakeArr.length - 1] });
+app.post("/books", (request, response) => {
+  const book = {
+    title: request.body.title,
+    author: request.body.author,
+    genre: request.body.genre,
+  };
+
+  console.log(books);
+
+  const successResponse = {
+    message: "Book added",
+    books: book,
+  };
+
+  books.push(book);
+  response.send(successResponse);
+});
+
+app.put("/books", (request, response) => {
+  console.log(request);
+});
+
+app.delete("/books", (request, response) => {
+  let findBook;
+  for (let i = 0; i < books.length; i++) {
+    if (books[i].title === request.body.title) {
+      const newBooks = books.splice(i, 1);
+      console.log(newBooks);
+      response.send({ message: "deleted", books: [newBooks] });
+    }
+    console.log(findBook);
+  }
 });
 
 app.listen(5001, () => {
