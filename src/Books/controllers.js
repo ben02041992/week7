@@ -1,41 +1,65 @@
 const Book = require("./model");
 
-const addBook = async (request, response) => {
+const addBook = async (req, res) => {
   try {
-    console.log("request.body ", request.body);
-    const book = Book.create({
-      title: request.body.title,
-      author: request.body.author,
-      genre: request.body.genre,
-    });
-    console.log(book);
-    response.send({ message: "book created", book });
+    const newBook = await Book.create(req.body);
+    response.status(201).send({ message: "book created", newBook });
   } catch (error) {
-    error.message({ message: "wrong", error: error });
+    console.error("error creating book", error);
+    res.status(500).send({ message: "internal server error" });
   }
 };
 
-const getBooks = async (request, response) => {
-  const books = await Book.find({});
-  response.send({ message: "success all the books", books: books });
+const getAllBooks = async (req, res) => {
+  try {
+    const books = await Book.find();
+    res.status(200).send({ message: "showing all books", books });
+  } catch (error) {
+    console.error("Error getting books", error);
+    res.status(500).send({ message: "internal server error" });
+  }
 };
 
-const logTypeOfResult = async (result) => {
-  console.log(`Typeof result: ${typeof result} - result: ${result}`);
+const updateAuthorByTitle = async (req, res) => {
+  const { title } = req.params;
+  const { author } = req.body;
+  try {
+    const updatedBook = await Book.findOneAndUpdate(
+      { title },
+      { author },
+      { new: true }
+    );
+    if (!updatedBook) {
+      return res.status(404).send({ message: "book not found" });
+    }
+    res
+      .status(200)
+      .send({ message: "successfully updated author: ", updatedBook });
+  } catch (error) {
+    console.error("error updating author", error);
+    res.status(500).send({ message: "Internal server error", error });
+  }
 };
 
-const updateBook = async (request, response) => {
-  console.log(request.body);
-};
-
-const deleteBook = async (request, response) => {
-  response.send({ message: "book deleted" });
+const deleteBookByTitle = async (req, res) => {
+  const { title } = req.params;
+  try {
+    const deletedBook = Book.findOneAndDelete({ title });
+    if (!deletedBook) {
+      return res.status(404).send({ message: "book not found" });
+    }
+    res
+      .status(200)
+      .send({ message: "book deleted successfully", book: deletedBook });
+  } catch (error) {
+    console.error("error deleting book", error);
+    res.status(500).send({ message: "Internal server error", error });
+  }
 };
 
 module.exports = {
   addBook,
-  getBooks,
-  logTypeOfResult,
-  updateBook,
-  deleteBook,
+  getAllBooks,
+  updateAuthorByTitle,
+  deleteBookByTitle,
 };
