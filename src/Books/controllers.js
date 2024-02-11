@@ -20,6 +20,17 @@ const getAllBooks = async (req, res) => {
   }
 };
 
+const getBookByTitle = async (req, res) => {
+  const { title } = req.query;
+  try {
+    const books = await Book.find({ title });
+    res.status(200).send({ message: `showing books by: ${title}`, books });
+  } catch (error) {
+    console.error("Error getting books.", error);
+    res.status(500).send({ message: "Internal server error", error });
+  }
+};
+
 const updateAuthorByTitle = async (req, res) => {
   const { title } = req.params;
   const { author } = req.body;
@@ -73,4 +84,5 @@ module.exports = {
   updateAuthorByTitle,
   deleteBookByTitle,
   deleteAllBooks,
+  getBookByTitle,
 };

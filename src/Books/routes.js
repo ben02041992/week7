@@ -9,11 +9,14 @@ const {
   updateAuthorByTitle,
   deleteBookByTitle,
   deleteAllBooks,
+  getBookByTitle,
 } = require("./controllers");
 
 bookRouter.post("/books/addBook", addBook);
 
 bookRouter.get("/books/getAllBooks", getAllBooks);
+
+bookRouter.get("/books/:title", getBookByTitle);
 
 bookRouter.put("/books/:title", updateAuthorByTitle);
 
